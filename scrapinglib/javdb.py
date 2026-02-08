@@ -1,10 +1,88 @@
 # -*- coding: utf-8 -*-
 
 import re
+import subprocess
+import tempfile
+import os
 from urllib.parse import urljoin
 from lxml import etree
-from .httprequest import request_session
+from .httprequest import G_USER_AGENT
 from .parser import Parser
+
+
+class CurlResponse:
+    def __init__(self, content, status_code, url):
+        self.content = content
+        self.status_code = status_code
+        self.url = url
+        self.ok = 200 <= status_code < 300
+
+    @property
+    def text(self):
+        return self.content.decode('utf-8', errors='ignore')
+
+
+class CurlSession:
+    def __init__(self, cookies=None, proxies=None, verify=True):
+        self.proxies = proxies
+        self.verify = verify
+        self.cookie_file = tempfile.NamedTemporaryFile(delete=False)
+        self.cookie_file.close()
+        self.cookie_path = self.cookie_file.name
+        self.initial_cookies = cookies if cookies else {}
+
+    def get(self, url):
+        cmd = [
+            'curl', '-L', '-s', '--compressed',
+            '-w', '\n%{http_code}\n%{url_effective}',
+            '-o', '-',
+            '-A', G_USER_AGENT,
+            '-b', self.cookie_path,
+            '-c', self.cookie_path,
+        ]
+
+        if self.initial_cookies:
+            cookie_str = '; '.join([f'{k}={v}' for k, v in self.initial_cookies.items()])
+            cmd.extend(['-b', cookie_str])
+            self.initial_cookies = {}
+
+        if not self.verify:
+            cmd.append('-k')
+
+        if self.proxies:
+            proxy = self.proxies.get('https') or self.proxies.get('http')
+            if proxy:
+                cmd.extend(['-x', proxy])
+
+        cmd.append(url)
+
+        result = subprocess.run(cmd, capture_output=True)
+        output = result.stdout
+
+        lines = output.split(b'\n')
+        if len(lines) >= 3:
+            effective_url = lines[-1].decode('utf-8', errors='ignore')
+            status_code_str = lines[-2].decode('utf-8', errors='ignore')
+            try:
+                status_code = int(status_code_str)
+            except ValueError:
+                status_code = 0
+            content = b'\n'.join(lines[:-2])
+            if content.endswith(b'\n'):
+                content = content[:-1]
+        else:
+            content = output
+            status_code = 0
+            effective_url = url
+
+        return CurlResponse(content, status_code, effective_url)
+
+    def __del__(self):
+        if hasattr(self, 'cookie_path') and os.path.exists(self.cookie_path):
+            try:
+                os.remove(self.cookie_path)
+            except:
+                pass
 
 
 class Javdb(Parser):
@@ -65,7 +143,7 @@ class Javdb(Parser):
 
     def search(self, number: str):
         self.number = number
-        self.session = request_session(cookies=self.cookies, proxies=self.proxies, verify=self.verify)
+        self.session = CurlSession(cookies=self.cookies, proxies=self.proxies, verify=self.verify)
         if self.specifiedUrl:
             self.detailurl = self.specifiedUrl
         else:
