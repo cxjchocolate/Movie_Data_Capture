@@ -7,10 +7,10 @@ numpy
 face-recognition-models
 lxml
 beautifulsoup4
-pillow==9.5.0
+pillow
 cloudscraper
-pysocks==1.7.1
-urllib3==1.25.11
+pysocks
+urllib3
 certifi
 MechanicalSoup
 opencc-python-reimplemented

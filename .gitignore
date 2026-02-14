@@ -114,3 +114,5 @@ failed/*
 .idea
 
 .python/
+
+bin
