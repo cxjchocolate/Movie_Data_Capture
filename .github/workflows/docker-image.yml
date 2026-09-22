@@ -1,0 +1,62 @@
+name: Build and Push Python Docker Image
+
+# 触发条件：推送到 main 分支，或发布以 v 开头的版本标签（如 v1.0.0）
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ 'v*.*.*' ]
+
+# 定义环境变量
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    # 授予写入包（Packages）的权限
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # 1. 拉取代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. 设置 Docker Buildx（用于加速和多架构构建）
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      # 3. 登录到 GitHub 容器注册表 (GHCR)
+      - name: Log into registry ${{ env:REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 4. 提取 Docker 元数据（标签、版本等）
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # 自动生成 latest 标签和版本号标签
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      # 5. 构建并推送 Docker 镜像
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ id.meta.outputs.tags }}
+          labels: ${{ id.meta.outputs.labels }}
+          # 启用缓存以加快后续构建速度
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
