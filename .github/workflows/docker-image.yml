@@ -2,7 +2,7 @@ name: Build and Push Python Docker Image
 
 on:
   push:
-    branches: [ "main", "test" ]
+    branches: [ "main"]
     tags: [ 'v*.*.*' ]
 
 env:
