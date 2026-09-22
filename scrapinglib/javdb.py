@@ -88,15 +88,16 @@ class CurlSession:
 class Javdb(Parser):
     source = 'javdb'
 
-    expr_number = '//strong[contains(text(),"番號")]/../span/text()'
-    expr_number2 = '//strong[contains(text(),"番號")]/../span/a/text()'
+    # expr_number = '//a[contains(text(),"番號")]/../span/text()'
+    expr_number = '//div[contains(@class, "panel-block")]/a[@data-clipboard-text]/@data-clipboard-text'
+    # expr_number2 = '//strong[contains(text(),"番號")]/../span/a/text()'
     expr_title = "/html/head/title/text()"
     expr_title_no = '//*[contains(@class,"movie-list")]/div/a/div[contains(@class, "video-title")]/text()'
     expr_runtime = '//strong[contains(text(),"時長")]/../span/text()'
     expr_runtime2 = '//strong[contains(text(),"時長")]/../span/a/text()'
     expr_uncensored = '//strong[contains(text(),"類別")]/../span/a[contains(@href,"/tags/uncensored?") or contains(@href,"/tags/western?")]'
-    expr_actor = '//span[@class="value"]/a[contains(@href,"/actors/")]/text()'
-    expr_actor2 = '//span[@class="value"]/a[contains(@href,"/actors/")]/../strong/@class'
+    expr_actor = '//span[@class="value"]/a[@class="actor-female" and contains(@href,"/actors/")]/text()'
+    expr_actor2 = '//span[@class="value"]/a[contains(@href,"/actors/")]/@class'
     expr_release = '//strong[contains(text(),"日期")]/../span/text()'
     expr_release_no = '//*[contains(@class,"movie-list")]/div/a/div[contains(@class, "meta")]/text()'
     expr_studio = '//strong[contains(text(),"片商")]/../span/a/text()'
@@ -209,8 +210,8 @@ class Javdb(Parser):
             return self.number
         # 番号被分割开，需要合并后才是完整番号
         part1 = self.getTreeElement(htmltree, self.expr_number)
-        part2 = self.getTreeElement(htmltree, self.expr_number2)
-        dp_number = part2 + part1
+        # part2 = self.getTreeElement(htmltree, self.expr_number2)
+        dp_number = part1
         # NOTE 检测匹配与更新 self.number
         if dp_number.upper() != self.number.upper():
             raise Exception(f'[!] {self.number}: find [{dp_number}] in javdb, not match')
@@ -254,18 +255,18 @@ class Javdb(Parser):
 
     def getActors(self, htmltree):
         actors = self.getTreeAll(htmltree, self.expr_actor)
-        genders = self.getTreeAll(htmltree, self.expr_actor2)
+        # genders = self.getTreeAll(htmltree, self.expr_actor2)
         r = []
         idx = 0
         # NOTE only female, we dont care others
         actor_gendor = 'female'
         for act in actors:
-            if((actor_gendor == 'all')
-            or (actor_gendor == 'both' and genders[idx] in ['symbol female', 'symbol male'])
-            or (actor_gendor == 'female' and genders[idx] == 'symbol female')
-            or (actor_gendor == 'male' and genders[idx] == 'symbol male')):
-                r.append(act)
-            idx = idx + 1
+            # if((actor_gendor == 'all')
+            # or (actor_gendor == 'both' and genders[idx] in ['symbol female', 'symbol male'])
+            # or (actor_gendor == 'female' and genders[idx] == 'symbol female')
+            # or (actor_gendor == 'male' and genders[idx] == 'symbol male')):
+            r.append(act)
+            # idx = idx + 1
         if re.match(r'FC2-[\d]+', self.number, re.A) and not r:
             r = '素人'
             self.fixstudio = True
