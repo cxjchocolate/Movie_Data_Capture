@@ -24,16 +24,16 @@ from number_parser import get_number
 from core import core_main, core_main_no_net_op, moveFailedFolder, debug_print
 
 
-# def check_update(local_version):
-#     htmlcode = get_html("https://api.github.com/repos/yoshiko2/Movie_Data_Capture/releases/latest")
-#     data = json.loads(htmlcode)
-#     remote = int(data["tag_name"].replace(".", ""))
-#     local_version = int(local_version.replace(".", ""))
-#     if local_version < remote:
-#         print("[*]" + ("* New update " + str(data["tag_name"]) + " *").center(54))
-#         print("[*]" + "↓ Download ↓".center(54))
-#         print("[*]https://github.com/yoshiko2/Movie_Data_Capture/releases")
-#         print("[*]======================================================")
+def check_update(local_version):
+    htmlcode = get_html("https://api.github.com/repos/yoshiko2/Movie_Data_Capture/releases/latest")
+    data = json.loads(htmlcode)
+    remote = int(data["tag_name"].replace(".", ""))
+    local_version = int(local_version.replace(".", ""))
+    if local_version < remote:
+        print("[*]" + ("* New update " + str(data["tag_name"]) + " *").center(54))
+        print("[*]" + "↓ Download ↓".center(54))
+        print("[*]https://github.com/yoshiko2/Movie_Data_Capture/releases")
+        print("[*]======================================================")
 
 
 def argparse_function(ver: str) -> typing.Tuple[str, str, str, str, bool, bool, str, str]:
@@ -561,7 +561,7 @@ def main(args: tuple) -> Path:
 
     if conf.update_check():
         try:
-            check_update(version)
+            # check_update(version)
             # Download Mapping Table, parallel version
             def fmd(f) -> typing.Tuple[str, Path]:
                 return ('https://raw.githubusercontent.com/yoshiko2/Movie_Data_Capture/master/MappingTable/' + f,
@@ -704,7 +704,7 @@ def period(delta, pattern):
 
 
 if __name__ == '__main__':
-    version = '6.6.11'
+    version = '6.6.16'
     urllib3.disable_warnings()  # Ignore http proxy warning
     app_start = time.time()
 
