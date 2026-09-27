@@ -4,6 +4,7 @@ import re
 import json
 from .parser import Parser
 import config
+import traceback
 import importlib
 
 
@@ -92,6 +93,7 @@ class Scraping:
                 except Exception as e:
                     if config.getInstance().debug():
                         print(e)
+                        traceback.print_exc()
                 # if any service return a valid return, break
                 if self.get_data_state(json_data):
                     if self.debug:
@@ -137,6 +139,7 @@ class Scraping:
                 except Exception as e:
                     if config.getInstance().debug():
                         print(e)
+                        traceback.print_exc()
                     # json_data = self.func_mapping[source](number, self)
                 # if any service return a valid return, break
                 if self.get_data_state(json_data):

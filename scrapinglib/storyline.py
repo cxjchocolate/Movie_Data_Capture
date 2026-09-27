@@ -8,6 +8,7 @@ import json
 import os
 import re
 import time
+import traceback
 import secrets
 import builtins
 import config
@@ -143,6 +144,7 @@ def getStoryline_airav(number, debug, proxies, verify):
     except Exception as e:
         if debug:
             print(f"[-]MP getStoryline_airav Error: {e},number [{number}].")
+            traceback.print_exc()
         pass
     return None
 
@@ -160,6 +162,7 @@ def getStoryline_airavwiki(number, debug, proxies, verify):
     except Exception as e:
         if debug:
             print(f"[-]MP def getStoryline_airavwiki Error: {e}, number [{number}].")
+            traceback.print_exc()
         pass
     return ''
 
@@ -200,6 +203,7 @@ def getStoryline_58avgo(number, debug, proxies, verify):
     except Exception as e:
         if debug:
             print(f"[-]MP getOutline_58avgo Error: {e}, number [{number}].")
+            traceback.print_exc()
         pass
     return ''
 
@@ -228,6 +232,7 @@ def getStoryline_avno1(number, debug, proxies, verify):  #获取剧情介绍 从
     except Exception as e:
         if debug:
             print(f"[-]MP getOutline_avno1 Error: {e}, number [{number}].")
+            traceback.print_exc()
         pass
     return ''
 
@@ -255,6 +260,7 @@ def getStoryline_avno1OLD(number, debug, proxies, verify):  #获取剧情介绍 
     except Exception as e:
         if debug:
             print(f"[-]MP getOutline_avno1 Error: {e}, number [{number}].")
+            traceback.print_exc()
         pass
     return ''
 
@@ -270,5 +276,6 @@ def getStoryline_xcity(number, debug, proxies, verify):  #获取剧情介绍 从
     except Exception as e:
         if debug:
             print(f"[-]MP getOutline_xcity Error: {e}, number [{number}].")
+            traceback.print_exc()
         pass
     return ''

@@ -2,6 +2,7 @@
 
 import mechanicalsoup
 import requests
+import traceback
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from cloudscraper import create_scraper
@@ -40,6 +41,7 @@ def get(url: str, cookies=None, ua: str = None, extra_headers=None, return_type:
         except Exception as e:
             if config.getInstance().debug():
                 print(f"[-]Connect: {url} retry {i + 1}/{retry}")
+                traceback.print_exc()
             errors = str(e)
     if config.getInstance().debug():
         if "getaddrinfo failed" in errors:
@@ -73,6 +75,7 @@ def post(url: str, data: dict=None, files=None, cookies=None, ua: str=None, retu
         except Exception as e:
             if config.getInstance().debug():
                 print(f"[-]Connect: {url} retry {i + 1}/{retry}")
+                traceback.print_exc()
             errors = str(e)
         if config.getInstance().debug():
             if "getaddrinfo failed" in errors:

@@ -2,6 +2,7 @@ import sys
 sys.path.append('../')
 
 import logging
+import traceback
 import os
 import config
 import importlib
@@ -107,6 +108,7 @@ def face_center(filename, model):
         print('[-]Model found face  ' + filename)
         if config.getInstance().debug() == 1:
             logging.error(e)
+            traceback.print_exc()
         return (0, 0)
 
 if __name__ == '__main__':

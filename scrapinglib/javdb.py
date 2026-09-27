@@ -4,6 +4,7 @@ import re
 import subprocess
 import tempfile
 import os
+import traceback
 from urllib.parse import urljoin
 from lxml import etree
 from .httprequest import G_USER_AGENT
@@ -203,6 +204,7 @@ class Javdb(Parser):
             print(f'[!] {self.number}: Error in queryNumberUrl: {str(e)}')
             print(f'[!] Response status: {resp.status_code if "resp" in locals() else "N/A"}')
             print(f'[!] Response URL: {resp.url if "resp" in locals() else "N/A"}')
+            traceback.print_exc()
             raise
 
     def getNum(self, htmltree):

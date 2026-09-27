@@ -3,6 +3,7 @@
 import json
 import re
 from lxml import etree, html
+import traceback
 
 import config
 from . import httprequest
@@ -169,6 +170,7 @@ class Parser:
         except Exception as e:
             if config.getInstance().debug():
                 print(e)
+                traceback.print_exc()
             dic = {"title": ""}
         js = json.dumps(dic, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
         return js

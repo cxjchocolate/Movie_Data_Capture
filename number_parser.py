@@ -3,6 +3,7 @@ import re
 import sys
 import config
 import typing
+import traceback
 
 G_spat = re.compile(
     "^\w+\.(cc|com|net|me|club|jp|tv|xyz|biz|wiki|info|tw|us|de)@|^22-sht\.me|"
@@ -96,6 +97,7 @@ def get_number(debug: bool, file_path: str) -> str:
     except Exception as e:
         if debug:
             print(f'[-]Number Parser exception: {e} [{file_path}]')
+            traceback.print_exc()
         return None
         
 
